@@ -1,28 +1,28 @@
-import { list, config } from "@keystone-6/core";
-import { statelessSessions } from "@keystone-6/core/session";
-import { password, relationship, text } from "@keystone-6/core/fields";
-import { createAuth } from "@keystone-6/auth";
+import { list, config } from '@keystone-6/core'
+import { statelessSessions } from '@keystone-6/core/session'
+import { password, relationship, text } from '@keystone-6/core/fields'
+import { createAuth } from '@keystone-6/auth'
 
-const { PGUSER, PGPASSWORD, PGHOST, PGPORT, PGDATABASE } = process.env;
+const { PGUSER, PGPASSWORD, PGHOST, PGPORT, PGDATABASE } = process.env
 
-const DATABASE_URL = `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}`;
+const DATABASE_URL = `postgresql://${PGUSER}:${PGPASSWORD}@${PGHOST}:${PGPORT}/${PGDATABASE}`
 
 // Move to it's own file
 
 const { withAuth } = createAuth({
-  listKey: "User",
-  identityField: "email",
-  sessionData: "phone",
-  secretField: "password",
+  listKey: 'User',
+  identityField: 'email',
+  sessionData: 'phone',
+  secretField: 'password',
   initFirstItem: {
-    fields: ["phone", "email", "password"],
+    fields: ['phone', 'email', 'password'],
   },
-});
+})
 
 const session = statelessSessions({
   max: 60 * 60 * 24 * 1, // one day
-  secret: "WHATEVER BUT AT LEAST 32 CHAR 1234567890",
-});
+  secret: 'WHATEVER BUT AT LEAST 32 CHAR 1234567890',
+})
 
 export default config(
   withAuth({
@@ -34,11 +34,11 @@ export default config(
           }),
           email: text({
             validation: { isRequired: true },
-            isIndexed: "unique",
+            isIndexed: 'unique',
           }),
           password: password({ validation: { isRequired: true } }),
           pets: relationship({
-            ref: "Pet.owner",
+            ref: 'Pet.owner',
             many: true,
           }),
         },
@@ -49,7 +49,7 @@ export default config(
             validation: { isRequired: true },
           }),
           owner: relationship({
-            ref: "User.pets",
+            ref: 'User.pets',
           }),
         },
       }),
@@ -62,16 +62,16 @@ export default config(
       }),
     },
     db: {
-      provider: "postgresql",
+      provider: 'postgresql',
       url: DATABASE_URL,
       onConnect: async (context) => {},
       enableLogging: true,
       useMigrations: true,
-      idField: { kind: "uuid" },
+      idField: { kind: 'uuid' },
     },
     session,
     ui: {
       isAccessAllowed: (ctx) => !!ctx.session?.data,
     },
   })
-);
+)
