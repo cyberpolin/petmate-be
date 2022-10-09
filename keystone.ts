@@ -3,17 +3,14 @@ import { list, config } from "@keystone-6/core"
 import { text } from '@keystone-6/core/fields'
 
 const {
-    parsed:{
 
         PGUSER,
         PGPASSWORD,
         PGHOST,
         PGPORT,
         PGDATABASE,
-    }
-} = dotenv.config() || process.env
-console.log('>>', dotenv.config())
-console.log('>>', process.env)
+    
+} = process.env
 const DATABASE_URL=`postgresql://${ PGUSER }:${ PGPASSWORD }@${ PGHOST }:${ PGPORT }/${ PGDATABASE }`
 
 export default config({
