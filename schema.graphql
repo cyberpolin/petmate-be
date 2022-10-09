@@ -5,6 +5,18 @@ type User {
   id: ID!
   phone: String
   email: String
+  password: PasswordState
+  pets(
+    where: PetWhereInput! = {}
+    orderBy: [PetOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [Pet!]
+  petsCount(where: PetWhereInput! = {}): Int
+}
+
+type PasswordState {
+  isSet: Boolean!
 }
 
 input UserWhereUniqueInput {
@@ -19,6 +31,7 @@ input UserWhereInput {
   id: IDFilter
   phone: StringFilter
   email: StringFilter
+  pets: PetManyRelationFilter
 }
 
 input IDFilter {
@@ -66,6 +79,12 @@ input NestedStringFilter {
   not: NestedStringFilter
 }
 
+input PetManyRelationFilter {
+  every: PetWhereInput
+  some: PetWhereInput
+  none: PetWhereInput
+}
+
 input UserOrderByInput {
   id: OrderDirection
   phone: OrderDirection
@@ -80,6 +99,15 @@ enum OrderDirection {
 input UserUpdateInput {
   phone: String
   email: String
+  password: String
+  pets: PetRelateToManyForUpdateInput
+}
+
+input PetRelateToManyForUpdateInput {
+  disconnect: [PetWhereUniqueInput!]
+  set: [PetWhereUniqueInput!]
+  create: [PetCreateInput!]
+  connect: [PetWhereUniqueInput!]
 }
 
 input UserUpdateArgs {
@@ -90,6 +118,63 @@ input UserUpdateArgs {
 input UserCreateInput {
   phone: String
   email: String
+  password: String
+  pets: PetRelateToManyForCreateInput
+}
+
+input PetRelateToManyForCreateInput {
+  create: [PetCreateInput!]
+  connect: [PetWhereUniqueInput!]
+}
+
+type Pet {
+  id: ID!
+  name: String
+  owner: User
+}
+
+input PetWhereUniqueInput {
+  id: ID
+}
+
+input PetWhereInput {
+  AND: [PetWhereInput!]
+  OR: [PetWhereInput!]
+  NOT: [PetWhereInput!]
+  id: IDFilter
+  name: StringFilter
+  owner: UserWhereInput
+}
+
+input PetOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+}
+
+input PetUpdateInput {
+  name: String
+  owner: UserRelateToOneForUpdateInput
+}
+
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
+input PetUpdateArgs {
+  where: PetWhereUniqueInput!
+  data: PetUpdateInput!
+}
+
+input PetCreateInput {
+  name: String
+  owner: UserRelateToOneForCreateInput
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 type Breed {
@@ -142,12 +227,45 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
+  createPet(data: PetCreateInput!): Pet
+  createPets(data: [PetCreateInput!]!): [Pet]
+  updatePet(where: PetWhereUniqueInput!, data: PetUpdateInput!): Pet
+  updatePets(data: [PetUpdateArgs!]!): [Pet]
+  deletePet(where: PetWhereUniqueInput!): Pet
+  deletePets(where: [PetWhereUniqueInput!]!): [Pet]
   createBreed(data: BreedCreateInput!): Breed
   createBreeds(data: [BreedCreateInput!]!): [Breed]
   updateBreed(where: BreedWhereUniqueInput!, data: BreedUpdateInput!): Breed
   updateBreeds(data: [BreedUpdateArgs!]!): [Breed]
   deleteBreed(where: BreedWhereUniqueInput!): Breed
   deleteBreeds(where: [BreedWhereUniqueInput!]!): [Breed]
+  endSession: Boolean!
+  authenticateUserWithPassword(
+    email: String!
+    password: String!
+  ): UserAuthenticationWithPasswordResult
+  createInitialUser(
+    data: CreateInitialUserInput!
+  ): UserAuthenticationWithPasswordSuccess!
+}
+
+union UserAuthenticationWithPasswordResult =
+    UserAuthenticationWithPasswordSuccess
+  | UserAuthenticationWithPasswordFailure
+
+type UserAuthenticationWithPasswordSuccess {
+  sessionToken: String!
+  item: User!
+}
+
+type UserAuthenticationWithPasswordFailure {
+  message: String!
+}
+
+input CreateInitialUserInput {
+  phone: String
+  email: String
+  password: String
 }
 
 type Query {
@@ -159,6 +277,14 @@ type Query {
   ): [User!]
   user(where: UserWhereUniqueInput!): User
   usersCount(where: UserWhereInput! = {}): Int
+  pets(
+    where: PetWhereInput! = {}
+    orderBy: [PetOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [Pet!]
+  pet(where: PetWhereUniqueInput!): Pet
+  petsCount(where: PetWhereInput! = {}): Int
   breeds(
     where: BreedWhereInput! = {}
     orderBy: [BreedOrderByInput!]! = []
@@ -168,7 +294,10 @@ type Query {
   breed(where: BreedWhereUniqueInput!): Breed
   breedsCount(where: BreedWhereInput! = {}): Int
   keystone: KeystoneMeta!
+  authenticatedItem: AuthenticatedItem
 }
+
+union AuthenticatedItem = User
 
 type KeystoneMeta {
   adminMeta: KeystoneAdminMeta!

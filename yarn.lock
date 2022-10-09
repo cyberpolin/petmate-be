@@ -1722,6 +1722,21 @@
   resolved "https://registry.yarnpkg.com/@js-joda/core/-/core-5.4.1.tgz#984922e386169c60a95cdb60bd6199338e9d6e4c"
   integrity sha512-+uMco2Xm9VYJ81XYWwrvgsM9xEvqs9JvLNrN4/fOg7YJKk4yeqAg+O/cpoFPTGxvfL2Zy0mUcnKlIz9UV0Cadw==
 
+"@keystone-6/auth@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@keystone-6/auth/-/auth-4.0.1.tgz#755746e194185fd25758d43f4fc930ab96bb9777"
+  integrity sha512-9flBu0ZFkmabzj+IaWrjX8EzWczQ7gO8hoFOmNHocEWGSB+tIx6q3EEE6upd2acERSnVlRAWrPwudMhnTYYcSQ==
+  dependencies:
+    "@babel/runtime" "^7.16.3"
+    "@keystone-ui/button" "^7.0.1"
+    "@keystone-ui/core" "^5.0.1"
+    "@keystone-ui/fields" "^7.1.1"
+    "@keystone-ui/loading" "^6.0.1"
+    "@keystone-ui/notice" "^6.0.1"
+    cross-fetch "^3.1.4"
+    fast-deep-equal "^3.1.3"
+    graphql "^15.8.0"
+
 "@keystone-6/core@^2.3.0":
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/@keystone-6/core/-/core-2.3.0.tgz#aadb3932b61d834c586ca26b47bfb257587a8803"
@@ -3298,6 +3313,13 @@ crc32-stream@^4.0.2:
   dependencies:
     crc-32 "^1.2.0"
     readable-stream "^3.4.0"
+
+cross-fetch@^3.1.4:
+  version "3.1.5"
+  resolved "https://registry.yarnpkg.com/cross-fetch/-/cross-fetch-3.1.5.tgz#e1389f44d9e7ba767907f7af8454787952ab534f"
+  integrity sha512-lvb1SBsI0Z7GDwmuid+mU3kWVBwTVUbe7S0H52yaaAdQOXq2YktTCZdlAcNKFzE6QtRz0snpw9bNiPeOIkkQvw==
+  dependencies:
+    node-fetch "2.6.7"
 
 cross-spawn@7.0.3, cross-spawn@^7.0.3:
   version "7.0.3"
