@@ -11,8 +11,9 @@ const {
         PGPORT,
         PGDATABASE,
     }
-} = dotenv.config()
-
+} = dotenv.config() || process.env
+console.log('>>', dotenv.config())
+console.log('>>', process.env)
 const DATABASE_URL=`postgresql://${ PGUSER }:${ PGPASSWORD }@${ PGHOST }:${ PGPORT }/${ PGDATABASE }`
 
 export default config({
