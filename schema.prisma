@@ -17,7 +17,17 @@ model User {
   phone    String @default("")
   email    String @unique @default("")
   password String
+  owner    Owner? @relation("Owner_user")
   pets     Pet[]  @relation("Pet_owner")
+}
+
+model Owner {
+  id       String   @id @default(uuid()) @postgresql.Uuid
+  user     User?    @relation("Owner_user", fields: [userId], references: [id])
+  userId   String?  @unique @map("user") @postgresql.Uuid
+  name     String   @default("")
+  lastName String   @default("")
+  birthDay DateTime
 }
 
 model Pet {

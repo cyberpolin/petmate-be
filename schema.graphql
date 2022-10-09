@@ -6,6 +6,7 @@ type User {
   phone: String
   email: String
   password: PasswordState
+  owner: Owner
   pets(
     where: PetWhereInput! = {}
     orderBy: [PetOrderByInput!]! = []
@@ -31,6 +32,7 @@ input UserWhereInput {
   id: IDFilter
   phone: StringFilter
   email: StringFilter
+  owner: OwnerWhereInput
   pets: PetManyRelationFilter
 }
 
@@ -100,7 +102,14 @@ input UserUpdateInput {
   phone: String
   email: String
   password: String
+  owner: OwnerRelateToOneForUpdateInput
   pets: PetRelateToManyForUpdateInput
+}
+
+input OwnerRelateToOneForUpdateInput {
+  create: OwnerCreateInput
+  connect: OwnerWhereUniqueInput
+  disconnect: Boolean
 }
 
 input PetRelateToManyForUpdateInput {
@@ -119,12 +128,92 @@ input UserCreateInput {
   phone: String
   email: String
   password: String
+  owner: OwnerRelateToOneForCreateInput
   pets: PetRelateToManyForCreateInput
+}
+
+input OwnerRelateToOneForCreateInput {
+  create: OwnerCreateInput
+  connect: OwnerWhereUniqueInput
 }
 
 input PetRelateToManyForCreateInput {
   create: [PetCreateInput!]
   connect: [PetWhereUniqueInput!]
+}
+
+type Owner {
+  id: ID!
+  user: User
+  name: String
+  lastName: String
+  birthDay: DateTime
+}
+
+scalar DateTime
+  @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339#section-5.6")
+
+input OwnerWhereUniqueInput {
+  id: ID
+}
+
+input OwnerWhereInput {
+  AND: [OwnerWhereInput!]
+  OR: [OwnerWhereInput!]
+  NOT: [OwnerWhereInput!]
+  id: IDFilter
+  user: UserWhereInput
+  name: StringFilter
+  lastName: StringFilter
+  birthDay: DateTimeFilter
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+  not: DateTimeFilter
+}
+
+input OwnerOrderByInput {
+  id: OrderDirection
+  name: OrderDirection
+  lastName: OrderDirection
+  birthDay: OrderDirection
+}
+
+input OwnerUpdateInput {
+  user: UserRelateToOneForUpdateInput
+  name: String
+  lastName: String
+  birthDay: DateTime
+}
+
+input UserRelateToOneForUpdateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
+  disconnect: Boolean
+}
+
+input OwnerUpdateArgs {
+  where: OwnerWhereUniqueInput!
+  data: OwnerUpdateInput!
+}
+
+input OwnerCreateInput {
+  user: UserRelateToOneForCreateInput
+  name: String
+  lastName: String
+  birthDay: DateTime
+}
+
+input UserRelateToOneForCreateInput {
+  create: UserCreateInput
+  connect: UserWhereUniqueInput
 }
 
 type Pet {
@@ -156,12 +245,6 @@ input PetUpdateInput {
   owner: UserRelateToOneForUpdateInput
 }
 
-input UserRelateToOneForUpdateInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
-  disconnect: Boolean
-}
-
 input PetUpdateArgs {
   where: PetWhereUniqueInput!
   data: PetUpdateInput!
@@ -170,11 +253,6 @@ input PetUpdateArgs {
 input PetCreateInput {
   name: String
   owner: UserRelateToOneForCreateInput
-}
-
-input UserRelateToOneForCreateInput {
-  create: UserCreateInput
-  connect: UserWhereUniqueInput
 }
 
 type Breed {
@@ -227,6 +305,12 @@ type Mutation {
   updateUsers(data: [UserUpdateArgs!]!): [User]
   deleteUser(where: UserWhereUniqueInput!): User
   deleteUsers(where: [UserWhereUniqueInput!]!): [User]
+  createOwner(data: OwnerCreateInput!): Owner
+  createOwners(data: [OwnerCreateInput!]!): [Owner]
+  updateOwner(where: OwnerWhereUniqueInput!, data: OwnerUpdateInput!): Owner
+  updateOwners(data: [OwnerUpdateArgs!]!): [Owner]
+  deleteOwner(where: OwnerWhereUniqueInput!): Owner
+  deleteOwners(where: [OwnerWhereUniqueInput!]!): [Owner]
   createPet(data: PetCreateInput!): Pet
   createPets(data: [PetCreateInput!]!): [Pet]
   updatePet(where: PetWhereUniqueInput!, data: PetUpdateInput!): Pet
@@ -277,6 +361,14 @@ type Query {
   ): [User!]
   user(where: UserWhereUniqueInput!): User
   usersCount(where: UserWhereInput! = {}): Int
+  owners(
+    where: OwnerWhereInput! = {}
+    orderBy: [OwnerOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [Owner!]
+  owner(where: OwnerWhereUniqueInput!): Owner
+  ownersCount(where: OwnerWhereInput! = {}): Int
   pets(
     where: PetWhereInput! = {}
     orderBy: [PetOrderByInput!]! = []
