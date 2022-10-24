@@ -24,6 +24,7 @@ CREATE TABLE "Pet" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL DEFAULT E'',
     "owner" UUID,
+    "breed" UUID,
 
     CONSTRAINT "Pet_pkey" PRIMARY KEY ("id")
 );
@@ -32,6 +33,7 @@ CREATE TABLE "Pet" (
 CREATE TABLE "Breed" (
     "id" UUID NOT NULL,
     "name" TEXT NOT NULL DEFAULT E'',
+    "description" TEXT NOT NULL DEFAULT E'',
 
     CONSTRAINT "Breed_pkey" PRIMARY KEY ("id")
 );
@@ -45,8 +47,14 @@ CREATE UNIQUE INDEX "Owner_user_key" ON "Owner"("user");
 -- CreateIndex
 CREATE INDEX "Pet_owner_idx" ON "Pet"("owner");
 
+-- CreateIndex
+CREATE INDEX "Pet_breed_idx" ON "Pet"("breed");
+
 -- AddForeignKey
 ALTER TABLE "Owner" ADD CONSTRAINT "Owner_user_fkey" FOREIGN KEY ("user") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Pet" ADD CONSTRAINT "Pet_owner_fkey" FOREIGN KEY ("owner") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "Pet" ADD CONSTRAINT "Pet_breed_fkey" FOREIGN KEY ("breed") REFERENCES "Breed"("id") ON DELETE SET NULL ON UPDATE CASCADE;

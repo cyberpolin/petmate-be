@@ -6,7 +6,9 @@
   "author": "cyberpolin",
   "license": "MIT",
   "dependencies": {
+    "@graphql-tools/schema": "^9.0.4",
     "@keystone-6/auth": "^4.0.1",
+    "@keystone-6/cloudinary": "^4.0.1",
     "@keystone-6/core": "^2.3.0",
     "dotenv": "^16.0.3",
     "prettier": "2.7.1",

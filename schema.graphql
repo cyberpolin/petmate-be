@@ -220,6 +220,14 @@ type Pet {
   id: ID!
   name: String
   owner: User
+  breed: Breed
+  images(
+    where: PetImageWhereInput! = {}
+    orderBy: [PetImageOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [PetImage!]
+  imagesCount(where: PetImageWhereInput! = {}): Int
 }
 
 input PetWhereUniqueInput {
@@ -233,6 +241,14 @@ input PetWhereInput {
   id: IDFilter
   name: StringFilter
   owner: UserWhereInput
+  breed: BreedWhereInput
+  images: PetImageManyRelationFilter
+}
+
+input PetImageManyRelationFilter {
+  every: PetImageWhereInput
+  some: PetImageWhereInput
+  none: PetImageWhereInput
 }
 
 input PetOrderByInput {
@@ -243,6 +259,21 @@ input PetOrderByInput {
 input PetUpdateInput {
   name: String
   owner: UserRelateToOneForUpdateInput
+  breed: BreedRelateToOneForUpdateInput
+  images: PetImageRelateToManyForUpdateInput
+}
+
+input BreedRelateToOneForUpdateInput {
+  create: BreedCreateInput
+  connect: BreedWhereUniqueInput
+  disconnect: Boolean
+}
+
+input PetImageRelateToManyForUpdateInput {
+  disconnect: [PetImageWhereUniqueInput!]
+  set: [PetImageWhereUniqueInput!]
+  create: [PetImageCreateInput!]
+  connect: [PetImageWhereUniqueInput!]
 }
 
 input PetUpdateArgs {
@@ -253,11 +284,111 @@ input PetUpdateArgs {
 input PetCreateInput {
   name: String
   owner: UserRelateToOneForCreateInput
+  breed: BreedRelateToOneForCreateInput
+  images: PetImageRelateToManyForCreateInput
+}
+
+input BreedRelateToOneForCreateInput {
+  create: BreedCreateInput
+  connect: BreedWhereUniqueInput
+}
+
+input PetImageRelateToManyForCreateInput {
+  create: [PetImageCreateInput!]
+  connect: [PetImageWhereUniqueInput!]
+}
+
+type PetImage {
+  id: ID!
+  image: CloudinaryImage_File
+}
+
+type CloudinaryImage_File {
+  id: ID
+  filename: String
+  originalFilename: String
+  mimetype: String
+  encoding: String
+  publicUrl: String
+  publicUrlTransformed(transformation: CloudinaryImageFormat): String
+}
+
+"""
+Mirrors the formatting options [Cloudinary provides](https://cloudinary.com/documentation/image_transformation_reference).
+All options are strings as they ultimately end up in a URL.
+"""
+input CloudinaryImageFormat {
+  """
+  Rewrites the filename to be this pretty string. Do not include `/` or `.`
+  """
+  prettyName: String
+  width: String
+  height: String
+  crop: String
+  aspect_ratio: String
+  gravity: String
+  zoom: String
+  x: String
+  y: String
+  format: String
+  fetch_format: String
+  quality: String
+  radius: String
+  angle: String
+  effect: String
+  opacity: String
+  border: String
+  background: String
+  overlay: String
+  underlay: String
+  default_image: String
+  delay: String
+  color: String
+  color_space: String
+  dpr: String
+  page: String
+  density: String
+  flags: String
+  transformation: String
+}
+
+input PetImageWhereUniqueInput {
+  id: ID
+}
+
+input PetImageWhereInput {
+  AND: [PetImageWhereInput!]
+  OR: [PetImageWhereInput!]
+  NOT: [PetImageWhereInput!]
+  id: IDFilter
+}
+
+input PetImageOrderByInput {
+  id: OrderDirection
+}
+
+input PetImageUpdateInput {
+  image: Upload
+}
+
+"""
+The `Upload` scalar type represents a file upload.
+"""
+scalar Upload
+
+input PetImageUpdateArgs {
+  where: PetImageWhereUniqueInput!
+  data: PetImageUpdateInput!
+}
+
+input PetImageCreateInput {
+  image: Upload
 }
 
 type Breed {
   id: ID!
   name: String
+  description: String
 }
 
 input BreedWhereUniqueInput {
@@ -270,15 +401,18 @@ input BreedWhereInput {
   NOT: [BreedWhereInput!]
   id: IDFilter
   name: StringFilter
+  description: StringFilter
 }
 
 input BreedOrderByInput {
   id: OrderDirection
   name: OrderDirection
+  description: OrderDirection
 }
 
 input BreedUpdateInput {
   name: String
+  description: String
 }
 
 input BreedUpdateArgs {
@@ -288,6 +422,7 @@ input BreedUpdateArgs {
 
 input BreedCreateInput {
   name: String
+  description: String
 }
 
 """
@@ -317,6 +452,15 @@ type Mutation {
   updatePets(data: [PetUpdateArgs!]!): [Pet]
   deletePet(where: PetWhereUniqueInput!): Pet
   deletePets(where: [PetWhereUniqueInput!]!): [Pet]
+  createPetImage(data: PetImageCreateInput!): PetImage
+  createPetImages(data: [PetImageCreateInput!]!): [PetImage]
+  updatePetImage(
+    where: PetImageWhereUniqueInput!
+    data: PetImageUpdateInput!
+  ): PetImage
+  updatePetImages(data: [PetImageUpdateArgs!]!): [PetImage]
+  deletePetImage(where: PetImageWhereUniqueInput!): PetImage
+  deletePetImages(where: [PetImageWhereUniqueInput!]!): [PetImage]
   createBreed(data: BreedCreateInput!): Breed
   createBreeds(data: [BreedCreateInput!]!): [Breed]
   updateBreed(where: BreedWhereUniqueInput!, data: BreedUpdateInput!): Breed
@@ -331,6 +475,13 @@ type Mutation {
   createInitialUser(
     data: CreateInitialUserInput!
   ): UserAuthenticationWithPasswordSuccess!
+  createPetAndUser(
+    name: String!
+    ownerId: ID
+    breedId: ID
+    email: String
+    phone: String
+  ): Pet
 }
 
 union UserAuthenticationWithPasswordResult =
@@ -377,6 +528,14 @@ type Query {
   ): [Pet!]
   pet(where: PetWhereUniqueInput!): Pet
   petsCount(where: PetWhereInput! = {}): Int
+  petImages(
+    where: PetImageWhereInput! = {}
+    orderBy: [PetImageOrderByInput!]! = []
+    take: Int
+    skip: Int! = 0
+  ): [PetImage!]
+  petImage(where: PetImageWhereUniqueInput!): PetImage
+  petImagesCount(where: PetImageWhereInput! = {}): Int
   breeds(
     where: BreedWhereInput! = {}
     orderBy: [BreedOrderByInput!]! = []

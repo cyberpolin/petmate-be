@@ -1,10 +1,19 @@
 import { list } from '@keystone-6/core'
+
 import {
   password,
   relationship,
   text,
   timestamp,
 } from '@keystone-6/core/fields'
+import { cloudinaryImage } from '@keystone-6/cloudinary'
+
+const cloudinary = {
+  cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+  apiKey: process.env.CLOUDINARY_API_KEY,
+  apiSecret: process.env.CLOUDINARY_API_SECRET,
+  folder: `${process.env.CLOUDINARY_API_FOLDER}/pets`,
+}
 
 export default {
   User: list({
@@ -50,6 +59,20 @@ export default {
       owner: relationship({
         ref: 'User.pets',
       }),
+      breed: relationship({
+        ref: 'Breed',
+      }),
+      images: relationship({
+        ref: 'PetImage',
+        many: true,
+      }),
+    },
+  }),
+  PetImage: list({
+    fields: {
+      image: cloudinaryImage({
+        cloudinary,
+      }),
     },
   }),
   Breed: list({
@@ -57,6 +80,7 @@ export default {
       name: text({
         validation: { isRequired: true },
       }),
+      description: text(),
     },
   }),
 }

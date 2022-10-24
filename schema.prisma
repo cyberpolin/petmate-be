@@ -31,15 +31,27 @@ model Owner {
 }
 
 model Pet {
-  id      String  @id @default(uuid()) @postgresql.Uuid
-  name    String  @default("")
-  owner   User?   @relation("Pet_owner", fields: [ownerId], references: [id])
-  ownerId String? @map("owner") @postgresql.Uuid
+  id      String     @id @default(uuid()) @postgresql.Uuid
+  name    String     @default("")
+  owner   User?      @relation("Pet_owner", fields: [ownerId], references: [id])
+  ownerId String?    @map("owner") @postgresql.Uuid
+  breed   Breed?     @relation("Pet_breed", fields: [breedId], references: [id])
+  breedId String?    @map("breed") @postgresql.Uuid
+  images  PetImage[] @relation("Pet_images")
 
   @@index([ownerId])
+  @@index([breedId])
+}
+
+model PetImage {
+  id              String @id @default(uuid()) @postgresql.Uuid
+  image           Json?
+  from_Pet_images Pet[]  @relation("Pet_images")
 }
 
 model Breed {
-  id   String @id @default(uuid()) @postgresql.Uuid
-  name String @default("")
+  id             String @id @default(uuid()) @postgresql.Uuid
+  name           String @default("")
+  description    String @default("")
+  from_Pet_breed Pet[]  @relation("Pet_breed")
 }
