@@ -481,7 +481,7 @@ type Mutation {
     breedId: ID
     email: String
     phone: String
-  ): Pet
+  ): PetUser
 }
 
 union UserAuthenticationWithPasswordResult =
@@ -631,4 +631,9 @@ type KeystoneAdminUISort {
 enum KeystoneAdminUISortDirection {
   ASC
   DESC
+}
+
+type PetUser {
+  pet: Pet
+  pass: String
 }
